@@ -114,7 +114,7 @@ class MTTDtest(unittest.TestCase):
         self.assertIsNotNone(decoded_mrz_json)
 
     def test_decode_mrz_recs_invalid(self):
-        """Invoke decode_mrz_recs function - positive case - encode_10_recs"""
+        """Invoke decode_mrz_recs function - negative case - encode_10_recs - with invalid records"""
         data = MTTDtest.load_data(self, "encoded_10_invalid_recs")
         decoded_mrz_json_list = decode_mrz_recs(data)
         self.assertIsNotNone(decoded_mrz_json_list)

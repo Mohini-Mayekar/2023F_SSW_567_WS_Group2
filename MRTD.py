@@ -2,13 +2,13 @@
 
 from contants import (
     CHECK_DIGIT_VERIFICATION_FAILED,
-    CHECK_DIGIT_VERIFICATION_FAILED_DETAILS
+    CHECK_DIGIT_VERIFICATION_FAILED_DETAILS,
 )
 
 
 def scan_mrz():
     """logic to scan MRZ and return two strings - blank function"""
-    #blank function
+    # blank function
     # mrz_str_ln_1 = SAMPLE_ENCODED_MRZ_STR_1
     # mrz_str_ln_2 = SAMPLE_ENCODED_MRZ_STR_2
     # return mrz_str_ln_1, mrz_str_ln_2
@@ -24,34 +24,16 @@ def decode_mrz_recs(encoded_recs_json):
     """Decode multiple MRZ recs"""
     try:
         decoded_json_list = []
-       # check_digit_errors = []
         encoded_recs = encoded_recs_json["records_encoded"]
         for rec in encoded_recs:
-        # P<CIVLYNN<<NEVEAH<BRAM<<<<<<<<<<<<<<<<<<<<<<;W620126G54CIV5910106F9707302AJ010215I<<<<<<6
+            # P<CIVLYNN<<NEVEAH<BRAM<<<<<<<<<<<<<<<<<<<<<<;W620126G54CIV5910106F9707302AJ010215I<<<<<<6
             mrz_str_list = rec.split(";")
             mrz_str_ln_1 = mrz_str_list[0]
             mrz_str_ln_2 = mrz_str_list[1]
             decoded_json_list.append(decode_mrz(mrz_str_ln_1, mrz_str_ln_2))
 
-        # if check_digit_errors:
-        #     raise ValueError(CHECK_DIGIT_VERIFICATION_FAILED, check_digit_errors)
-
         return decoded_json_list
 
-    # except ValueError as e:
-    #     #print(f"Error: {e}")
-    #     if len(e.args) > 1 and isinstance(e.args[1], list):
-    #         # Error contains check digit verification details
-    #         check_digit_errors = e.args[1]
-    #         for error in check_digit_errors:
-    #             print(
-    #                 CHECK_DIGIT_VERIFICATION_FAILED_DETAILS.format(
-    #                     field=error[0],
-    #                     value=error[1],
-    #                     expected=error[2],
-    #                     received=error[3],
-    #                 )
-    #             )
     except TimeoutError:
         print("TimeoutError - in decode_mrz_recs")
 
@@ -69,13 +51,6 @@ def decode_mrz(mrz_str_ln_1, mrz_str_ln_2):
         first_name = mrz_str_ln_1_list[3]
         middle_name = mrz_str_ln_1_list[4]
         given_name = first_name + " " + middle_name
-
-        # print("doc_type : ", doc_type)
-        # print("issuing_country : ", issuing_country)
-        # print("last_name : ", last_name)
-        # print("first_name : ", first_name)
-        # print("middle_name : ", middle_name)
-        # print("given_name : ", given_name)
 
         line_1_json_str = (
             '{"issuing_country": "'
@@ -146,17 +121,6 @@ def decode_mrz(mrz_str_ln_1, mrz_str_ln_2):
                 )
             )
 
-        # print("doc_number : ", doc_number)
-        # print("doc_check_digit : ", doc_check_digit)
-        # print("country_code : ", country_code)
-        # print("birth_date : ", birth_date)
-        # print("birth_date_check_digit : ", birth_date_check_digit)
-        # print("gender : ", gender)
-        # print("expiration_date : ", expiration_date)
-        # print("expiration_date_check_digit : ", expiration_date_check_digit)
-        # print("personal_number : ", personal_number)
-        # print("personal_number_check_digit : ", personal_number_check_digit)
-
         line_2_json_str = (
             '{"passport_number": "'
             + doc_number
@@ -181,7 +145,7 @@ def decode_mrz(mrz_str_ln_1, mrz_str_ln_2):
         return json_str
 
     except ValueError as e:
-        #print(f"Error: {e}")
+        # print(f"Error: {e}")
         if len(e.args) > 1 and isinstance(e.args[1], list):
             # Error contains check digit verification details
             check_digit_errors = e.args[1]
@@ -224,13 +188,6 @@ def encode_mrz(rec):
             first_name = given_name
             middle_name = ""
 
-        # print("doc_type : ", doc_type)
-        # print("issuing_country : ", issuing_country)
-        # print("last_name : ", last_name)
-        # print("first_name : ", first_name)
-        # print("middle_name : ", middle_name)
-        # print("given_name : ", given_name)
-
         #   P<CIVLYNN<<NEVEAH<BRAM<<<<<<<<<<<<<<<<<<<<<<
         line_1 = ("P", issuing_country + last_name, first_name, middle_name)
         encoded_line_1 = (
@@ -250,17 +207,6 @@ def encode_mrz(rec):
         expiration_date_check_digit = calculate_check_digit(expiration_date)
         personal_number = rec_line_2["personal_number"]
         personal_number_check_digit = calculate_check_digit(personal_number)
-
-        # print("passport_number : ", passport_number)
-        # print("doc_check_digit : ", doc_check_digit)
-        # print("country_code : ", country_code)
-        # print("birth_date : ", birth_date)
-        # print("birth_date_check_digit : ", birth_date_check_digit)
-        # print("gender : ", gender)
-        # print("expiration_date : ", expiration_date)
-        # print("expiration_date_check_digit : ", expiration_date_check_digit)
-        # print("personal_number : ", personal_number)
-        # print("personal_number_check_digit : ", personal_number_check_digit)
 
         #   W620126G54CIV5910106F9707302AJ010215I<<<<<<6
         line_2 = (
