@@ -4,7 +4,7 @@ from contants import (
     CHECK_DIGIT_VERIFICATION_FAILED,
     CHECK_DIGIT_VERIFICATION_FAILED_DETAILS,
 )
-
+import json
 
 def scan_mrz():
     """logic to scan MRZ and return two strings - blank function"""
@@ -22,15 +22,27 @@ def get_mrz_details_from_db():
 
 def decode_mrz_recs(encoded_recs_json):
     """Decode multiple MRZ recs"""
+    print(type(encoded_recs_json))
     try:
         decoded_json_list = []
-        encoded_recs = encoded_recs_json["records_encoded"]
+
+        # Check if the input is a dictionary and contains the key 'records_encoded'
+        if isinstance(encoded_recs_json, dict) and 'records_encoded' in encoded_recs_json:
+            encoded_recs = encoded_recs_json["records_encoded"]
+        else:
+            # If not a dictionary, assume it's a list
+            encoded_recs = encoded_recs_json
+
         for rec in encoded_recs:
-            # P<CIVLYNN<<NEVEAH<BRAM<<<<<<<<<<<<<<<<<<<<<<;W620126G54CIV5910106F9707302AJ010215I<<<<<<6
-            mrz_str_list = rec.split(";")
-            mrz_str_ln_1 = mrz_str_list[0]
-            mrz_str_ln_2 = mrz_str_list[1]
-            decoded_json_list.append(decode_mrz(mrz_str_ln_1, mrz_str_ln_2))
+            # Check if rec is a string (indicating it's an encoded record)
+            if isinstance(rec, str):
+                mrz_str_list = rec.split(";")
+                mrz_str_ln_1 = mrz_str_list[0]
+                mrz_str_ln_2 = mrz_str_list[1]
+                decoded_json_list.append(decode_mrz(mrz_str_ln_1, mrz_str_ln_2))
+            elif isinstance(rec, dict):
+                # If rec is already a dictionary, assume it's a decoded record
+                decoded_json_list.append(rec)
 
         return decoded_json_list
 
@@ -164,12 +176,30 @@ def decode_mrz(mrz_str_ln_1, mrz_str_ln_2):
 
 def encode_mrz_recs(decoded_recs_json):
     """Encode multiple MRZ recs"""
-    decoded_recs = decoded_recs_json["records_decoded"]
-    encoded_json_list = []
-    for rec in decoded_recs:
-        encoded_line_1, encoded_line_2 = encode_mrz(rec)
-        encoded_json_list.append(encoded_line_1 + ";" + encoded_line_2)
-    return encoded_json_list
+    try:
+        # Check if 'records_decoded' key exists in the dictionary
+        if 'records_decoded' in decoded_recs_json:
+            decoded_recs = decoded_recs_json['records_decoded']
+        else:
+            decoded_recs = decoded_recs_json  # Assume the records are directly in the dictionary
+
+        encoded_json_list = []
+        for rec in decoded_recs:
+            if isinstance(rec, str):
+                # If rec is a string, try to convert it to a dictionary
+                try:
+                    rec = json.loads(rec)
+                except json.JSONDecodeError:
+                    print(f"Error decoding JSON: {rec}")
+                    continue  # Skip to the next record if decoding fails
+
+            encoded_line_1, encoded_line_2 = encode_mrz(rec)
+            encoded_json_list.append(encoded_line_1 + ";" + encoded_line_2)
+        return encoded_json_list
+
+    except TimeoutError:
+        print("TimeoutError - in encode_mrz_recs")
+
 
 
 def encode_mrz(rec):
