@@ -8,7 +8,7 @@
 ---
 ### coverage test result:
 
-![Coverage Test Result Screenshot](https://raw.github.com/ashcaspy/SSW567-Final-Project/TA_test/coverage_test.jpg?raw=true "Coverage Test Output")
+![Coverage Test Result Screenshot](coverage_test.jpg?raw=true "Coverage Test Output")
 ---
 ### mutationtest result: 
 
