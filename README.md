@@ -10,6 +10,6 @@
 
 ![Coverage Test Result Screenshot](coverage_result.jpg?raw=true "Coverage Test Output")
 ---
-### mutationtest result: 
+### mutation test result: 
 
-[Mutation Test HTML](mutpy_result/index.html "Mutation Test Final Result")
+[Mutation Test HTML](mutpy_results/index.html"Mutation Test Final Result")
